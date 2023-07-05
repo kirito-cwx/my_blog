@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>123</title>
+</head>
+<body>
+{% for obj in articles %}
+{#<a href="/article/{{ obj.id }}/">{{ obj.title }}</a>#}
+<a href="{% url 'article_detail' obj.id  %}">{{ obj.title }}</a>
+{% endfor %}
+</body>
+</html>
