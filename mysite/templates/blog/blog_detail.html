@@ -3,6 +3,8 @@
     my site
 
 {% endblock %}
+{% block nav_blog_active %}active{% endblock %}
+
 {% block content %}
         <a href="{% url 'blog_detail' blog.id %}">{{ blog.title }}</a>
         <p>作者:{{ blog.author }}</p>
