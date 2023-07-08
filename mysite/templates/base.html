@@ -1,24 +1,21 @@
-{% load staticfiles %}
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/base.css'  %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'bootstrap-3.4.1/css/bootstrap.min.css' %}">
-    <script type="text/javascript" src="{% static 'jquery-1.12.4.min.js' %}"></script>
-
-    <script type="text/javascript" src="{% static 'bootstrap-3.4.1/js/bootstrap.min.js' %}"></script>
 
     {#    <link rel="stylesheet" href="/static/css/base.css">#}
 {#导入 css#}
     {% block head_extend %}{% endblock %}
 </head>
 <body>
-<div class="navbar navbar-defult navbar-fixed-top" role="navigation">
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container-fluid">
         <div class="navbar-header">
             <a class="navbar-brand" href="{% url 'home' %}">个人博客网站</a>
@@ -40,6 +37,8 @@
 </div>
 
 {% block content %}{% endblock %}
+<script type="text/javascript" src="{% static 'jquery-1.12.4.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'bootstrap-3.4.1/js/bootstrap.min.js' %}"></script>
 
 </body>
 </html>
