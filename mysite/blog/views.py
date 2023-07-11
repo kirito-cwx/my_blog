@@ -1,12 +1,15 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from .models import Blog, Blog_Type
-
+from django.core.paginator import Paginator
 
 # Create your views here.
 def blog_list(request):
-    blogs = Blog.objects.all()
+    page_num = request.GET.get('page',1)
+    blogs_all_list = Blog.objects.all()
+    paginator = Paginator(blogs_all_list, 10)
+    page_of_blogs =paginator.get_page(page_num)
     blog_types = Blog_Type.objects.all()
-    context = {"blogs": blogs,
+    context = {"page_of_blogs": page_of_blogs,
                "blog_types": blog_types}
     return render_to_response("blog/blog_list.html", context=context)
 
