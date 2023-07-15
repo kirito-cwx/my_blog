@@ -1,8 +1,9 @@
-from django.shortcuts import get_object_or_404,render_to_response
+from django.shortcuts import get_object_or_404, render_to_response
 from .models import Blog, Blog_Type
 from django.core.paginator import Paginator
 from django.conf import settings
 from django.db.models import Count
+
 
 def get_blog_list_common_data(request, blogs_all_list):
     paginator = Paginator(blogs_all_list, settings.EACH_PAGE_BLOG_NUMBER)
@@ -25,7 +26,7 @@ def get_blog_list_common_data(request, blogs_all_list):
         page_range.insert(0, 1)
     if page_range[-1] != paginator.num_pages:
         page_range.append(paginator.num_pages)
-    blog_types =Blog_Type.objects.annotate(blog_count =Count('blog_blog'))
+    blog_types = Blog_Type.objects.annotate(blog_count=Count('blog_blog'))
     '''
     添加博客分类对应的数量
     blog_types = Blog_Type.objects.all()
@@ -39,9 +40,10 @@ def get_blog_list_common_data(request, blogs_all_list):
     #     blog_count=Count('last_update_time'))
     blog_dates_dict = {}
     blog_dates = Blog.objects.dates('last_update_time', 'month', order='DESC')
-    blog_dates_dict={}
+    blog_dates_dict = {}
     for blog_date in blog_dates:
-        blog_count = Blog.objects.filter(last_update_time__year=blog_date.year, last_update_time__month=blog_date.month).count()
+        blog_count = Blog.objects.filter(last_update_time__year=blog_date.year,
+                                         last_update_time__month=blog_date.month).count()
         blog_dates_dict[blog_date] = blog_count
     context = {"page_of_blogs": page_of_blogs,
                "blog_types": blog_types,
@@ -77,9 +79,14 @@ def blog_with_date(request, year, month):
 
 def blog_detail(request, blog_id):
     blog = get_object_or_404(Blog, pk=blog_id)
+    if not request.COOKIES.get(f'blog_{blog_id}_readed'):
+        blog.readed_num += 1
+        blog.save()
     next_blog = Blog.objects.filter(last_update_time__gt=blog.last_update_time).last()
     previous_blog = Blog.objects.filter(last_update_time__lt=blog.last_update_time).first()
     context = {"blog": blog,
                "next_blog": next_blog,
                "previous_blog": previous_blog}
-    return render_to_response("blog/blog_detail.html", context=context)
+    response = render_to_response("blog/blog_detail.html", context=context)
+    response.set_cookie(f'blog_{blog_id}_readed', 'true', max_age=24 * 3600 * 7)
+    return response
