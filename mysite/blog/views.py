@@ -3,6 +3,9 @@ from .models import Blog, Blog_Type
 from django.core.paginator import Paginator
 from django.conf import settings
 from django.db.models import Count
+from django.contrib.contenttypes.models import ContentType
+from read_statistics.models import ReadNum
+from read_statistics.utils import read_statistics_once_read
 
 
 def get_blog_list_common_data(request, blogs_all_list):
@@ -79,14 +82,13 @@ def blog_with_date(request, year, month):
 
 def blog_detail(request, blog_id):
     blog = get_object_or_404(Blog, pk=blog_id)
-    if not request.COOKIES.get(f'blog_{blog_id}_readed'):
-        blog.readed_num += 1
-        blog.save()
+    key = read_statistics_once_read(request,blog)
+
     next_blog = Blog.objects.filter(last_update_time__gt=blog.last_update_time).last()
     previous_blog = Blog.objects.filter(last_update_time__lt=blog.last_update_time).first()
     context = {"blog": blog,
                "next_blog": next_blog,
                "previous_blog": previous_blog}
     response = render_to_response("blog/blog_detail.html", context=context)
-    response.set_cookie(f'blog_{blog_id}_readed', 'true', max_age=24 * 3600 * 7)
+    response.set_cookie(key, 'true', max_age=24 * 3600 * 7)
     return response
